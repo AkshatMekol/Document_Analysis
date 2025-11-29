@@ -2,57 +2,8 @@ import io
 import fitz
 import asyncio
 from PyPDF2 import PdfReader, PdfWriter
-from .config import MAX_PROCESSES_GROQ, MAX_PROCESSES_DEEPSEEK, CLASSIFY_PROMPT
-from .llm_utils import query_groq, query_deepseek
-
-MAX_PROCESSES_GROQ = 4
-MAX_PROCESSES_DEEPSEEK = 8
-
-CLASSIFY_PROMPT = """
-                  You are a strict classifier for tender documents.
-                  
-                  Your task is to identify ONLY the pages that must be filled out by the contractor and sent back to the client.
-                  These pages contain blanks, empty fields, places to write, tables to fill, or areas for signatures/seals.
-                  
-                  Ignore any page that is purely:
-                  - Instructions, clauses, or general text
-                  - Tender descriptions
-                  - Annexures with information already filled
-                  - Tables that only display data without requiring input
-                  
-                  Respond with ONE WORD ONLY: FORM or OTHER.
-                  
-                  Page content:
-                  {content}
-                  """
-
-import io
-import fitz
-import asyncio
-from PyPDF2 import PdfReader
-from .config import MAX_PROCESSES_GROQ, MAX_PROCESSES_DEEPSEEK, CLASSIFY_PROMPT
-from .llm_utils import query_groq, query_deepseek
-
-MAX_PROCESSES_GROQ = 4
-MAX_PROCESSES_DEEPSEEK = 8
-
-CLASSIFY_PROMPT = """
-                  You are a strict classifier for tender documents.
-                  
-                  Your task is to identify ONLY the pages that must be filled out by the contractor and sent back to the client.
-                  These pages contain blanks, empty fields, places to write, tables to fill, or areas for signatures/seals.
-                  
-                  Ignore any page that is purely:
-                  - Instructions, clauses, or general text
-                  - Tender descriptions
-                  - Annexures with information already filled
-                  - Tables that only display data without requiring input
-                  
-                  Respond with ONE WORD ONLY: FORM or OTHER.
-                  
-                  Page content:
-                  {content}
-                  """
+from utils.config import MAX_PROCESSES_GROQ, MAX_PROCESSES_DEEPSEEK, CLASSIFY_PROMPT
+from utils.llm_utils import query_groq, query_deepseek
 
 def is_scanned_page(page):
     text = page.get_text() or ""
