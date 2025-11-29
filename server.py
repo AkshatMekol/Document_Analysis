@@ -64,7 +64,6 @@ async def process_single_tender(tender_id: str):
 
             extracted_pdf_bytes, num_pages = await extract_form_pages(pdf_bytes, document_name)
 
-            # If pages extraction fails or too many errors, abort this PDF
             if num_pages == 0 and page_errors > 3:
                 print(f"❌ Too many errors, aborting PDF: {document_name}")
                 report["errors"].append(f"{document_name} aborted due to too many page errors")
@@ -89,7 +88,6 @@ async def process_single_tender(tender_id: str):
                 print(f"\n⚠️ No FORM pages found in {document_name}")
                 report["empty_docs"] += 1
 
-            # Mark document complete after each PDF
             await asyncio.to_thread(mark_document_complete, tender_id, document_name)
 
         except Exception as e:
