@@ -2,11 +2,19 @@ import re
 import time
 import base64
 import requests
+from PIL import Image
 from groq import Groq
 from io import BytesIO
 from config import GROQ_API_KEY, DEEPSEEK_API_URL, DEEPSEEK_API_KEY
 
 groq_client = Groq(api_key=GROQ_API_KEY)
+
+def render_page_to_image(page) -> bytes:
+    image = page.to_image(resolution=200).original.convert("RGB")
+    resized = image.resize((image.width // 2, image.height // 2))
+    buffer = io.BytesIO()
+    resized.save(buffer, format="JPEG", quality=40)
+    return buffer.getvalue()
 
 def query_groq(pil_image_bytes: bytes, prompt: str) -> str:
     img_base64 = base64.b64encode(pil_image_bytes).decode("utf-8")
@@ -32,7 +40,7 @@ def clean_llm_output(text: str) -> str:
     text = re.sub(r"\$\$(.*?)\$\$", "", text, flags=re.DOTALL)
     text = re.sub(r"\$(.*?)\$", "", text, flags=re.DOTALL)
     return text.strip()
-
+    
 def query_deepseek(prompt, retries=3, delay=2):
     headers = {"Authorization": f"Bearer {DEEPSEEK_API_KEY}", "Content-Type": "application/json"}
     payload = {
