@@ -1,1 +1,14 @@
-
+python-dotenv
+boto3
+botocore
+Pillow
+pymongo
+requests
+groq
+tabulate
+aiohttp
+uvicorn
+fastapi[all]
+PyPDF2
+PyMuPDF
+aiofiles
