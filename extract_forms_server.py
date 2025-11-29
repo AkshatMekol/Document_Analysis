@@ -40,7 +40,8 @@ async def process_single_tender(tender_id: str):
         "scanned_pages": 0,
         "regular_pages": 0,
         "total_page_errors": 0,  
-        "errors": []
+        "errors": [],
+        "form_pages": {}  
     }
 
     s3_prefix = f"tender-documents/{tender_id}/"
@@ -61,8 +62,11 @@ async def process_single_tender(tender_id: str):
         try:
             pdf_bytes = await fetch_pdf(pdf_key)
 
+            # Extract form pages
             form_pages, scanned_count, regular_count, page_errors = await extract_form_pages(pdf_bytes, document_name)
 
+            # Collect in report
+            report["form_pages"][document_name] = form_pages
             report["scanned_pages"] += scanned_count
             report["regular_pages"] += regular_count
             report["total_page_errors"] += page_errors
