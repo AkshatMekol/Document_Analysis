@@ -3,7 +3,7 @@ import asyncio
 import pdfplumber
 from io import BytesIO
 from request_analysis.chunking import split_text_to_subchunks
-from config import MAX_PROCESSES_DEEPSEEK, MAX_PROCESSES_GROQ, PDF_BATCH_SIZE
+from config import MAX_PROCESSES_DEEPSEEK, MAX_PROCESSES_GROQ
 from request_analysis.regular_helpers import extract_page_content, elements_to_positions
 from regular_analysis.scanned_helpers import is_scanned_page, process_scanned_page_worker, deepseek_translate_worker
 
