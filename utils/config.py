@@ -21,3 +21,20 @@ DOCS_STATUS_COLLECTION = os.getenv("DOCS_STATUS_COLLECTION")
 MAX_PROCESSES_GROQ = 5
 MAX_PROCESSES_DEEPSEEK = 10
 
+CLASSIFY_PROMPT = """
+                  You are a strict classifier for tender documents.
+                  
+                  Your task is to identify ONLY the pages that must be filled out by the contractor and sent back to the client.
+                  These pages contain blanks, empty fields, places to write, tables to fill, or areas for signatures/seals.
+                  
+                  Ignore any page that is purely:
+                  - Instructions, clauses, or general text
+                  - Tender descriptions
+                  - Annexures with information already filled
+                  - Tables that only display data without requiring input
+                  
+                  Respond with ONE WORD ONLY: FORM or OTHER.
+                  
+                  Page content:
+                  {content}
+                  """
