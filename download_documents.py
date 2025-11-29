@@ -35,7 +35,3 @@ def download_zip(tender_id: str):
         media_type="application/zip",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
-
-
-app = FastAPI()
-app.include_router(router)
