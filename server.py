@@ -37,7 +37,6 @@ async def process_single_tender(tender_id: str):
         "tender_id": tender_id,
         "processed_docs": 0,
         "skipped_docs": 0,
-        "empty_docs": 0,
         "scanned_pages": 0,
         "regular_pages": 0,
         "total_page_errors": 0,  
@@ -61,7 +60,11 @@ async def process_single_tender(tender_id: str):
 
         try:
             pdf_bytes = await fetch_pdf(pdf_key)
-            extracted_pdf_bytes, num_pages, page_errors = await extract_form_pages(pdf_bytes, document_name)
+
+            form_pages, scanned_count, regular_count, page_errors = await extract_form_pages(pdf_bytes, document_name)
+
+            report["scanned_pages"] += scanned_count
+            report["regular_pages"] += regular_count
             report["total_page_errors"] += page_errors
 
             if page_errors > 3:
@@ -69,27 +72,11 @@ async def process_single_tender(tender_id: str):
                 report["errors"].append(f"{document_name} aborted due to {page_errors} page errors")
                 continue
 
-            output_path = f"fillable_forms_{document_name}"
-            if num_pages > 0:
-                reader = PdfReader(extracted_pdf_bytes)
-                writer = PdfWriter()
-                for page in reader.pages:
-                    writer.add_page(page)
+            await asyncio.to_thread(mark_document_complete, tender_id, document_name, form_pages)
+            report["processed_docs"] += 1
 
-                with open(output_path, "wb") as f:
-                    writer.write(f)
-
-                print(f"\n🎯 Combined FORM pages PDF saved as: {output_path}")
-                report["processed_docs"] += 1
-                if page_errors > 0:
-                    report["errors"].append(f"{document_name} had {page_errors} page errors")
-
-            else:
-                print(f"\n⚠️ No FORM pages found in {document_name}")
-                report["empty_docs"] += 1
-
-            form_page_numbers = list(range(1, num_pages + 1)) if num_pages > 0 else []
-            await asyncio.to_thread(mark_document_complete, tender_id, document_name, form_page_numbers)
+            if page_errors > 0:
+                report["errors"].append(f"{document_name} had {page_errors} page errors")
 
         except Exception as e:
             print(f"❌ Error processing {document_name}: {e}")
