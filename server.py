@@ -29,6 +29,9 @@ app.add_middleware(
 )
 
 async def process_single_tender(tender_id: str):
+    print(f"\n===============================")
+    print(f"▶ START tender: {tender_id}")
+    print(f"===============================")
     prefix = f"tender-documents/{tender_id}/"
     pdf_keys = await list_s3_pdfs(prefix)
 
