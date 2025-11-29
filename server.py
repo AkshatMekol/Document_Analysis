@@ -88,7 +88,8 @@ async def process_single_tender(tender_id: str):
                 print(f"\n⚠️ No FORM pages found in {document_name}")
                 report["empty_docs"] += 1
 
-            await asyncio.to_thread(mark_document_complete, tender_id, document_name)
+            form_page_numbers = list(range(1, num_pages + 1)) if num_pages > 0 else []
+            await asyncio.to_thread(mark_document_complete, tender_id, document_name, form_page_numbers)
 
         except Exception as e:
             print(f"❌ Error processing {document_name}: {e}")
