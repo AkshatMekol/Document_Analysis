@@ -152,9 +152,15 @@ async def extract_form_pages(pdf_bytes: BytesIO, pdf_name: str):
         else:
             tasks.append(deepseek_worker(page_text, deepseek_semaphore, i+1, pdf_name))
 
-    results = await asyncio.gather(*tasks)
+    results = await asyncio.gather(*tasks, return_exceptions=True)
 
+    page_errors = 0
     for i, classification in zip(page_indices, results):
+        if isinstance(classification, Exception):
+            print(f"❌ Error on {pdf_name} - Page {i+1}: {classification}")
+            page_errors += 1
+            continue
+
         print(f"📄 Processing {pdf_name} - Page {i+1}/{len(doc)} | Result={classification}")
         if classification == "FORM":
             form_pages.append(i)
@@ -168,4 +174,4 @@ async def extract_form_pages(pdf_bytes: BytesIO, pdf_name: str):
         writer.write(output_pdf_bytes)
     output_pdf_bytes.seek(0)
 
-    return output_pdf_bytes, len(form_pages)
+    return output_pdf_bytes, len(form_pages), page_errors
