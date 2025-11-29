@@ -131,7 +131,7 @@ def extract_form_pages(pdf_bytes: BytesIO, pdf_name: str):
 #         loop = asyncio.get_running_loop()
 #         return await loop.run_in_executor(None, deepseek_classify_page, page_text)
       
-# async def extract_form_pages_async(pdf_bytes: BytesIO, pdf_name: str):
+# async def extract_form_pages(pdf_bytes: BytesIO, pdf_name: str):
 #     reader = PdfReader(pdf_bytes)
 #     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
 #     form_pages = []
