@@ -11,4 +11,5 @@ uvicorn
 fastapi[all]
 PyPDF2
 PyMuPDF
+pycryptodome
 aiofiles
