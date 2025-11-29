@@ -1,14 +1,10 @@
 import io
 import gc
-import re
-import time
-import base64
-import requests
 import pdfplumber
 from PIL import Image
 from io import BytesIO
-from config import GROQ_OCR_PROMPT, DEEPSEEK_TRANSLATE_PROMPT
 from utils.llm_utils import query_groq, query_deepseek
+from config import GROQ_OCR_PROMPT, DEEPSEEK_TRANSLATE_PROMPT
 
 def is_scanned_page(page):
     text = page.extract_text() or ""
