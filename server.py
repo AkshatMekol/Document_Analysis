@@ -1,9 +1,32 @@
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import asyncio
+import requests
 from io import BytesIO
 from PyPDF2 import PdfReader, PdfWriter
-from s3_utils import list_s3_pdfs, fetch_pdf
+from fastapi import FastAPI, HTTPException
 from helpers import extract_form_pages 
+from s3_utils import list_s3_pdfs, fetch_pdf
+from utils.mongo_utils import vector_collection, is_document_complete
+
+app = FastAPI()
+
+origins = [
+    "http://localhost:8080",
+    "http://192.168.1.5:8080",
+    "https://tenderbharat.vercel.app",
+    "http://localhost:3000",
+    "https://www.bidindia.site",
+    "https://www.bidindia.co.in",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 async def process_single_tender(tender_id: str):
     prefix = f"tender-documents/{tender_id}/"
