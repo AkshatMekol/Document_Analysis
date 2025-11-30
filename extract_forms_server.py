@@ -7,7 +7,7 @@ from PyPDF2 import PdfReader, PdfWriter
 from fastapi import FastAPI, HTTPException
 from utils.s3_utils import list_s3_pdfs, fetch_pdf
 from extract_forms.pdf_processing import extract_form_pages 
-from utils.mongo_utils import is_form_complete, mark_form_complete
+from utils.mongo_utils import is_form_complete, mark_form_complete, get_forms
 
 app = FastAPI()
 
@@ -41,7 +41,7 @@ async def process_single_tender(tender_id: str):
         "regular_pages": 0,
         "total_page_errors": 0,  
         "errors": [],
-        "form_pages": {}  
+        "forms": {}  
     }
 
     s3_prefix = f"tender-documents/{tender_id}/"
@@ -62,7 +62,6 @@ async def process_single_tender(tender_id: str):
         try:
             pdf_bytes = await fetch_pdf(pdf_key)
             form_pages, scanned_count, regular_count, page_errors = await extract_form_pages(pdf_bytes, document_name)
-            report["form_pages"][document_name] = form_pages
             report["scanned_pages"] += scanned_count
             report["regular_pages"] += regular_count
             report["total_page_errors"] += page_errors
@@ -81,7 +80,9 @@ async def process_single_tender(tender_id: str):
         except Exception as e:
             print(f"❌ Error processing {document_name}: {e}")
             report["errors"].append(f"{document_name}: {str(e)}")
-
+            
+    forms_data = await asyncio.to_thread(get_forms, tender_id)
+    report["forms"] = forms_data
     print(f"\n✅ Finished tender {tender_id}")
     print(f"📊 Report: {report}")
     return report
